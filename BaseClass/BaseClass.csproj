@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Colorful.Console" Version="1.2.15" />
+    <ProjectReference Include="..\ColorPrint\ColorPrint.csproj" />
+    <ProjectReference Include="..\Logger\CDLLogger.csproj" />
+    <ProjectReference Include="..\MultiDownloader\MultiDownloader.csproj" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

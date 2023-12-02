@@ -93,6 +93,10 @@ namespace CDLLogger
         }
         public Logger ClearPrintHandle()
         {
+            foreach (var output in outputs)
+            {
+                output.close();
+            }
             outputs.Clear();
             Console.WriteLine("Clear the handles.");
             return this;
@@ -102,10 +106,7 @@ namespace CDLLogger
             Console.WriteLine("Prepared to be closed.");
             Console.WriteLine("Close Output Handles.");
             Console.WriteLine("Handle Message:\n");
-            foreach (var output in outputs)
-            {
-                output.close();
-            }
+            
 
             Console.WriteLine("\nClose Completed.");
             Console.WriteLine("Thanks for using.");

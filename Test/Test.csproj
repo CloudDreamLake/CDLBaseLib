@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ColorPrint\ColorPrint.csproj" />
     <ProjectReference Include="..\Logger\CDLLogger.csproj" />
+    <ProjectReference Include="..\MultiDownloader\MultiDownloader.csproj" />
   </ItemGroup>
 
 </Project>
