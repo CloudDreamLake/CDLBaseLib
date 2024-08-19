@@ -18,17 +18,21 @@ namespace CDLLogger.LoggerPrintHandle
 
         public void close()
         {
-            Console.WriteLine("Date back to original color.");
+            Console.WriteLine("    Date back to original color.");
             printer.close();
-            Console.WriteLine("Close Successfully\n");
+            Console.WriteLine("    Close Successfully");
         }
 
         public void Print(LoggerLevel level, string message, StackTrace stackTrace)
         {
-            string FuncName = stackTrace.GetFrame(2).GetMethod().Name;
-            string TName = Thread.CurrentThread.Name;
+            string? FuncName = stackTrace?.GetFrame(2)?.GetMethod()?.Name;
+            if (FuncName == null)
+            {
+                FuncName = "<Unknown>";
+            }
+            string? TName = Thread.CurrentThread.Name;
             string TId = Environment.CurrentManagedThreadId.ToString();
-            if(TId == "1" && TName.Length == 0)
+            if(TName == null || (TId == "1" && TName.Length == 0))
             {
                 TName = "MainThread";
             }

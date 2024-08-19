@@ -41,11 +41,14 @@ namespace CDLLogger.LoggerPrintHandle
 
         public void Print(LoggerLevel level, string message, StackTrace stackTrace)
         {
-
-            string FuncName = stackTrace.GetFrame(2).GetMethod().Name;
-            string TName = Thread.CurrentThread.Name;
-            string TId = Thread.CurrentThread.ManagedThreadId.ToString();
-            if (TId == "1" && TName.Length == 0)
+            string? FuncName = stackTrace?.GetFrame(2)?.GetMethod()?.Name;
+            if (FuncName == null)
+            {
+                FuncName = "<Unknown>";
+            }
+            string? TName = Thread.CurrentThread.Name;
+            string TId = Environment.CurrentManagedThreadId.ToString();
+            if (TName == null || (TId == "1" && TName.Length == 0))
             {
                 TName = "MainThread";
             }
@@ -54,10 +57,10 @@ namespace CDLLogger.LoggerPrintHandle
         }
         public void close()
         {
-            Console.WriteLine("Close File:" +  FileName);
+            Console.WriteLine("    Close File:" +  FileName);
             writer.Close();
             fileStream.Close();
-            Console.WriteLine("Close Successfully.\n");
+            Console.WriteLine("    Close Successfully.\n");
         }
     }
 }

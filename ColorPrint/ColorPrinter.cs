@@ -11,8 +11,6 @@
         }
         public ColorPrinter print(string s)
         {
-            Console.ForegroundColor = LsFr;
-            Console.BackgroundColor = LsBg; 
             Console.Write(s);
             return this;    
         }
@@ -21,6 +19,14 @@
             Console.ForegroundColor = fr;
             Console.BackgroundColor = bg;
             Console.Write(s);
+            Console.ForegroundColor = LsFr;
+            Console.BackgroundColor = LsBg;
+            return this;
+        }
+        public ColorPrinter set(ConsoleColor fr, ConsoleColor fg)
+        {
+            LsFr = fr;
+            LsBg = fg;
             return this;
         }
         public void close()

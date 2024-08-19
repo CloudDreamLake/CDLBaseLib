@@ -106,7 +106,10 @@ namespace CDLLogger
             Console.WriteLine("Prepared to be closed.");
             Console.WriteLine("Close Output Handles.");
             Console.WriteLine("Handle Message:\n");
-            
+
+            Console.WriteLine("----------------------");
+
+            outputs.ForEach(output => { output.close(); Console.WriteLine("----------------------"); });
 
             Console.WriteLine("\nClose Completed.");
             Console.WriteLine("Thanks for using.");
