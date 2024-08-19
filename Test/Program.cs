@@ -8,12 +8,15 @@ namespace Test
         static Logger logger = new();
         static void Main(string[] args)
         {
-            Print("test");
-            logger.close();
-        }
-        public static void Print(string message)
-        {
-            logger.Error(message);
+            Downloader downloader = Downloader.Create(logger);
+
+            new Downloader(logger).Delete();
+
+            downloader.Download("lll", "sss.ccc");
+
+            downloader.Delete();
+
+            logger.Close();
         }
     }
 }

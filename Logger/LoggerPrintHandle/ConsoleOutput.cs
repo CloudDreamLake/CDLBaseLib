@@ -47,9 +47,10 @@ namespace CDLLogger.LoggerPrintHandle
                 .print(ConsoleColor.Magenta, ConsoleColor.Black, TName)
                 .print(":")
                 .print(ConsoleColor.Magenta, ConsoleColor.Black, TId)
-                .print(")")
-                .print(ConsoleColor.Cyan, ConsoleColor.Black, message);
-            Console.Write("\n");
+                .print(") ")
+                .print(ConsoleColor.Cyan, ConsoleColor.Black, message)
+                .print("\n")
+                .close();
         }
 
         string LoggerPrintHandle.getName()

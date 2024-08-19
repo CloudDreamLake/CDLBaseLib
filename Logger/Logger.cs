@@ -12,6 +12,7 @@ namespace CDLLogger
     public class Logger
     {
         private LoggerLevel print_level;
+        private object locker = new object();
         public static Dictionary<LoggerLevel, string> LogLevel2String = new Dictionary<LoggerLevel, string>()
         {
             { LoggerLevel.info, "Info" },
@@ -101,7 +102,7 @@ namespace CDLLogger
             Console.WriteLine("Clear the handles.");
             return this;
         }
-        public void close()
+        public void Close()
         {
             Console.WriteLine("Prepared to be closed.");
             Console.WriteLine("Close Output Handles.");

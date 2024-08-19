@@ -53,7 +53,7 @@ namespace CDLLogger.LoggerPrintHandle
                 TName = "MainThread";
             }
             string time = System.DateTime.Now.ToString("yy-MM-dd HH:mm:ss:ffff");
-            writer.WriteLine("[" + time + "|" + Logger.LogLevel2String[level] + "](" + FuncName + "|" + TName + ":" + TId + ")" + message);
+            writer.WriteLine("[" + time + "|" + Logger.LogLevel2String[level] + "](" + FuncName + "|" + TName + ":" + TId + ") " + message);
         }
         public void close()
         {
