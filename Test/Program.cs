@@ -5,7 +5,7 @@ namespace Test
 {
     internal class Program
     {
-        static Logger logger = new();
+        public static readonly Logger logger = Logger.Create();
         static void Main(string[] args)
         {
             Downloader downloader = Downloader.Create(logger);

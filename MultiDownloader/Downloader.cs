@@ -33,31 +33,54 @@ namespace MultiDownloader
         }
         public Downloader Download(string url, string file_name)
         {
-            download_infos.Add(new DownloadInfo(url, file_name));
-            return this;
+            lock(download_infos)
+            {
+                download_infos.Add(new DownloadInfo(url, file_name));
+                return this;
+            }
         }
         public void Main()
         {
-            while(run_flag)
+            while(run_flag || tasks.Count > 0 || download_infos.Count > 0)
             {
-                tasks.ForEach(task =>
+                int tmp_idx = -1;
+                for (int i = 0; i < tasks.Count; i++)
                 {
-                    if (!task.IsAlive)
+                    Thread task= tasks[i];
+                    if(!task.IsAlive)
                     {
-                        tasks.Remove(task);
+                        tmp_idx = i;
+                        break;
                     }
-                });
+                }
+                if(tmp_idx >= 0)
+                {
+                    tasks.Remove(tasks[tmp_idx]);
+                } 
+                //tasks.ForEach(task =>
+                //{
+                //    if (!task.IsAlive)
+                //    {
+                //        tasks.Remove(task);
+                //    }
+                //});
 
-                download_infos.ForEach(download_info =>
+                lock(download_infos)
                 {
-                    if(download_info != null)
+                    download_infos.ForEach(download_info =>
                     {
-                        Thread downloadTask = new Thread(new FileDownloader(logger, download_info.url, download_info.file_name).Download);
-                        downloadTask.Name = "DownLoad# " + (++index).ToString();
-                        downloadTask.Start();
-                        tasks.Add(downloadTask);
-                    }
-                });
+                        if(download_info != null)
+                        {
+                            Thread downloadTask = new Thread(new FileDownloader(logger, download_info.url, download_info.file_name).Download);
+                            downloadTask.Name = "DownLoad#" + (++index).ToString();
+                            downloadTask.Start();
+                            tasks.Add(downloadTask);
+                        }
+                    });
+                    download_infos.Clear();
+                }
+
+                Thread.Sleep(100);
             }
         }
 
@@ -81,6 +104,7 @@ namespace MultiDownloader
             run_flag = false;
             if(DownLoaderThread != null)
             {
+                logger.Info("Close DownLoader");
                 DownLoaderThread.Join();
             }
             else

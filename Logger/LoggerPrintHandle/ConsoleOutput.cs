@@ -23,32 +23,30 @@ namespace CDLLogger.LoggerPrintHandle
             Console.WriteLine("    Close Successfully");
         }
 
-        public void Print(LoggerLevel level, string message, StackTrace stackTrace)
+        public void Print(Logger.LogInfo info)
         {
-            string? FuncName = stackTrace?.GetFrame(2)?.GetMethod()?.Name;
+            string? FuncName = info.stackTrace?.GetFrame(2)?.GetMethod()?.Name;
             if (FuncName == null)
             {
                 FuncName = "<Unknown>";
             }
-            string? TName = Thread.CurrentThread.Name;
-            string TId = Environment.CurrentManagedThreadId.ToString();
-            if(TName == null || (TId == "1" && TName.Length == 0))
+            if(info.TName == null || (info.TId == "1" && info.TName.Length == 0))
             {
-                TName = "MainThread";
+                info.TName = "MainThread";
             }
             string time = System.DateTime.Now.ToString("yy-MM-dd HH:mm:ss:fff");
             printer.print("[")
-                .print(ConsoleColor.Blue, ConsoleColor.Black, time)
+                .print(LogLevel2Color[info.level], ConsoleColor.Black, time)
                 .print("|")
-                .print(LogLevel2Color[level], ConsoleColor.Black, Logger.LogLevel2String[level])
+                .print(LogLevel2Color[info.level], ConsoleColor.Black, Logger.LogLevel2String[info.level])
                 .print("](")
                 .print(ConsoleColor.Magenta, ConsoleColor.Black, FuncName)
                 .print("|")
-                .print(ConsoleColor.Magenta, ConsoleColor.Black, TName)
+                .print(ConsoleColor.Magenta, ConsoleColor.Black, info.TName)
                 .print(":")
-                .print(ConsoleColor.Magenta, ConsoleColor.Black, TId)
+                .print(ConsoleColor.Magenta, ConsoleColor.Black, info.TId)
                 .print(") ")
-                .print(ConsoleColor.Cyan, ConsoleColor.Black, message)
+                .print(ConsoleColor.Cyan, ConsoleColor.Black, info.message)
                 .print("\n")
                 .close();
         }

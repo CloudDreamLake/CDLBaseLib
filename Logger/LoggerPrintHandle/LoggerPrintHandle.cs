@@ -10,7 +10,7 @@ namespace CDLLogger.LoggerPrintHandle
     public interface LoggerPrintHandle
     {
         public string getName();
-        public void Print(LoggerLevel level, string message, StackTrace stackTrace) ;
+        public void Print(Logger.LogInfo info) ;
         public void close() ;
     }
 }

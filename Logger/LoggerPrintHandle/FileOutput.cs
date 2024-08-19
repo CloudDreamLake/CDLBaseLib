@@ -39,28 +39,28 @@ namespace CDLLogger.LoggerPrintHandle
             return "CDLHandle: File Output [To \"" + FileName + "\"]";
         }
 
-        public void Print(LoggerLevel level, string message, StackTrace stackTrace)
+        public void Print(Logger.LogInfo info)
         {
-            string? FuncName = stackTrace?.GetFrame(2)?.GetMethod()?.Name;
+            string? FuncName = info.stackTrace?.GetFrame(2)?.GetMethod()?.Name;
             if (FuncName == null)
             {
                 FuncName = "<Unknown>";
             }
-            string? TName = Thread.CurrentThread.Name;
-            string TId = Environment.CurrentManagedThreadId.ToString();
-            if (TName == null || (TId == "1" && TName.Length == 0))
+            //string? TName = Thread.CurrentThread.Name;
+            //string TId = Environment.CurrentManagedThreadId.ToString();
+            if (info.TName == null || (info.TId == "1" && info.TName.Length == 0))
             {
-                TName = "MainThread";
+                info.TName = "MainThread";
             }
             string time = System.DateTime.Now.ToString("yy-MM-dd HH:mm:ss:ffff");
-            writer.WriteLine("[" + time + "|" + Logger.LogLevel2String[level] + "](" + FuncName + "|" + TName + ":" + TId + ") " + message);
+            writer.WriteLine("[" + time + "|" + Logger.LogLevel2String[info.level] + "](" + FuncName + "|" + info.TName + ":" + info.TId + ") " + info.message);
         }
         public void close()
         {
             Console.WriteLine("    Close File:" +  FileName);
             writer.Close();
             fileStream.Close();
-            Console.WriteLine("    Close Successfully.\n");
+            Console.WriteLine("    Close Successfully.");
         }
     }
 }
