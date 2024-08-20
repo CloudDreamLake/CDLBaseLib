@@ -35,10 +35,11 @@ namespace CDLLogger
             { LoggerLevel.error, "Error" },
             { LoggerLevel.fatal, "Fatal" },
         };
-        public List<LoggerPrintHandle.LoggerPrintHandle> outputs = [
+        public static List<LoggerPrintHandle.LoggerPrintHandle> outputs = [
             new ConsoleOutput(),
             new FileOutput(),
-            new FileOutput("log.log")
+            new FileOutput("total.log"),
+            new FileOutput("log.log", true)
         ];
         private Logger()
         {
@@ -46,7 +47,7 @@ namespace CDLLogger
             Console.WriteLine("[CDL LOGGER] R1.0 for Windows.");
             Console.WriteLine("Prepare for Logger.");
             Console.WriteLine("Handle List:");
-            foreach(var output in outputs) Console.WriteLine("\t" + output.getName());
+            foreach(var output in outputs) Console.WriteLine("  " + output.getName());
             Console.WriteLine("");
         }
         public void Main()
@@ -145,7 +146,7 @@ namespace CDLLogger
 
             Console.WriteLine("Append Handle:", print_handle.getName());
             Console.WriteLine("Handle List:");
-            foreach (var output in outputs) Console.WriteLine("\t" + output.getName());
+            foreach (var output in outputs) Console.WriteLine("  " + output.getName());
             return this;
         }
         public Logger ClearPrintHandle()

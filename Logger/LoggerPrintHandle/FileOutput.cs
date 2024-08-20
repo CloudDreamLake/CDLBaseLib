@@ -13,25 +13,26 @@ namespace CDLLogger.LoggerPrintHandle
         private string FileName;
         private FileStream fileStream;
         private StreamWriter writer;
-        public FileOutput(string FileName)
-        {
-            this.FileName = FileName;
-            fileStream = new FileStream(FileName, FileMode.OpenOrCreate);
-            writer = new StreamWriter(fileStream);
-            fileStream.Position = fileStream.Length;
-            writer.WriteLine("---------------------------------------------------");
-        }
-        public FileOutput() : this(DateTime.Now.ToString("yy-MM-dd") + ".log")
-        {
-
-        }
-        public FileOutput(FileStream fileStream)
+        public FileOutput(FileStream fileStream, bool cover)
         {
             this.fileStream = fileStream;
-            FileName = fileStream.Name.Split(".").Last();
+            FileName = fileStream.Name.Split("\\").Last();
             writer = new StreamWriter(fileStream);
-            fileStream.SetLength(0);
+            if (cover)
+            {
+                fileStream.SetLength(0);
+                fileStream.Seek(0, SeekOrigin.Begin);
+            }
+            else
+            {
+                fileStream.Position = fileStream.Length;
+            }
+            writer.WriteLine("---------------------------------------------------");
         }
+        public FileOutput(string FileName, bool cover) : this(new FileStream(FileName, FileMode.OpenOrCreate), cover) { }
+        public FileOutput(string FileName) : this(FileName, false) { }
+        public FileOutput() : this(DateTime.Now.ToString("yy-MM-dd") + ".log") { }
+        public FileOutput(FileStream fileStream) : this(fileStream, false) { }
         public string getName()
         {
             return "CDLHandle: File Output [To \"" + FileName + "\"]";
@@ -46,7 +47,11 @@ namespace CDLLogger.LoggerPrintHandle
             }
             //string? TName = Thread.CurrentThread.Name;
             //string TId = Environment.CurrentManagedThreadId.ToString();
-            if (info.TName == null || (info.TId == "1" && info.TName.Length == 0))
+            if(info.TName == null)
+            {
+                info.TName = "<Unknown>";
+            }
+            if (info.TId == "1" && info.TName.Length == 0)
             {
                 info.TName = "MainThread";
             }

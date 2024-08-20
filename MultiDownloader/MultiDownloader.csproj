@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DownloaderFileMerger\DownloaderFileMerger.csproj" />
     <ProjectReference Include="..\Logger\CDLLogger.csproj" />
   </ItemGroup>
 

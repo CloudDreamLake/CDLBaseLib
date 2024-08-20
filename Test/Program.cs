@@ -10,8 +10,6 @@ namespace Test
         {
             Downloader downloader = Downloader.Create(logger);
 
-            new Downloader(logger).Delete();
-
             downloader.Download("https://github.com/CloudDreamLake/CDLBaseLib/releases/download/Rel/CDLLogger.dll", "CDLLogger.dll.down");
             //downloader.Download("https://github.com/CloudDreamLake/CDLBaseLib/releases/download/Rel/CDLLogger.dll", ".");
 

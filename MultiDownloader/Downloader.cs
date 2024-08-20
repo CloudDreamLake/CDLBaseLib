@@ -4,36 +4,20 @@ namespace MultiDownloader
 {
     public class Downloader
     {
-        static Downloader? Instance = null;
-        static Object locker = new();
+        private static Downloader? instance;
+        private static Object locker = new Object();
         public class DownloadInfo(Uri url, string file_name)
         {
             public Uri url = url;
             public string file_name = file_name;
         }
         private readonly List<DownloadInfo> download_infos = [];
-        private readonly Logger logger;
+        private Logger? logger;
         private readonly List<Thread> tasks = [];
         private Thread? DownLoaderThread = null;
         private bool run_flag = true;
         private int index = 0;
-        public Downloader() : this(Logger.Create()) { }
-        public Downloader(Logger logger)
-        {
-            lock(locker)
-            {
-                if(Instance == null)
-                {
-                    this.logger = logger;
-                    Instance = this;
-                }
-                else
-                {
-                    logger.Error("Too much Downloader Exists!!!");
-                    this.logger = Instance.logger;
-                }
-            }
-        }
+        private Downloader() { }
         
         public Downloader Download(Uri url, string file_name)
         {
@@ -49,6 +33,7 @@ namespace MultiDownloader
         }
         public void Main()
         {
+            logger.Info("DownLoad Thread Start!");
             while(run_flag || tasks.Count > 0 || download_infos.Count > 0)
             {
                 int tmp_idx = -1;
@@ -79,8 +64,10 @@ namespace MultiDownloader
                     {
                         if(download_info != null)
                         {
-                            Thread downloadTask = new Thread(new FileDownloader(logger, download_info).Download);
-                            downloadTask.Name = "DownLoad#" + (++index).ToString();
+                            Thread downloadTask = new(new FileDownloader(logger, download_info).Download)
+                            {
+                                Name = "DownLoad#" + (++index).ToString()
+                            };
                             downloadTask.Start();
                             tasks.Add(downloadTask);
                         }
@@ -98,13 +85,28 @@ namespace MultiDownloader
         }
         public static Downloader Create(Logger logger)
         {
-            logger.Info("Create DownLoader");
-            Downloader downloader = new(logger);
-            downloader.DownLoaderThread = new(downloader.Main);
-            downloader.DownLoaderThread.Name = "DownLoad Thread";
-            downloader.DownLoaderThread.Start();
+            if (instance == null)
+            {
+                lock (locker)
+                {
+                    if(instance == null)
+                    {
+                        logger.Info("Create DownLoader");
+                        Downloader downloader = new()
+                        {
+                            logger = logger
+                        };
+                        downloader.DownLoaderThread = new(downloader.Main)
+                        {
+                            Name = "DownLoad Thread"
+                        };
+                        downloader.DownLoaderThread.Start();
 
-            return downloader;
+                        return downloader;
+                    }
+                }
+            }
+            return instance;
         }
         public void Delete()
         {
