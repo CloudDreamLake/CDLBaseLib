@@ -4,9 +4,11 @@ namespace MultiDownloader
 {
     public class Downloader
     {
-        private class DownloadInfo(string url, string file_name)
+        static Downloader? Instance = null;
+        static Object locker = new();
+        public class DownloadInfo(Uri url, string file_name)
         {
-            public string url = url;
+            public Uri url = url;
             public string file_name = file_name;
         }
         private readonly List<DownloadInfo> download_infos = [];
@@ -15,21 +17,35 @@ namespace MultiDownloader
         private Thread? DownLoaderThread = null;
         private bool run_flag = true;
         private int index = 0;
-        public Downloader()
-        {
-            logger = new Logger();
-        }
+        public Downloader() : this(Logger.Create()) { }
         public Downloader(Logger logger)
         {
-            this.logger = logger;
+            lock(locker)
+            {
+                if(Instance == null)
+                {
+                    this.logger = logger;
+                    Instance = this;
+                }
+                else
+                {
+                    logger.Error("Too much Downloader Exists!!!");
+                    this.logger = Instance.logger;
+                }
+            }
         }
-        public Downloader Download(string url, string file_name)
+        
+        public Downloader Download(Uri url, string file_name)
         {
             lock(download_infos)
             {
                 download_infos.Add(new DownloadInfo(url, file_name));
                 return this;
             }
+        }
+        public Downloader Download(string url, string file_name)
+        {
+            return Download(new Uri(url), file_name);
         }
         public void Main()
         {
@@ -63,7 +79,7 @@ namespace MultiDownloader
                     {
                         if(download_info != null)
                         {
-                            Thread downloadTask = new Thread(new FileDownloader(logger, download_info.url, download_info.file_name).Download);
+                            Thread downloadTask = new Thread(new FileDownloader(logger, download_info).Download);
                             downloadTask.Name = "DownLoad#" + (++index).ToString();
                             downloadTask.Start();
                             tasks.Add(downloadTask);
@@ -78,7 +94,7 @@ namespace MultiDownloader
 
         public static Downloader Create()
         {
-            return Create(new Logger());
+            return Create(Logger.Create());
         }
         public static Downloader Create(Logger logger)
         {
@@ -96,8 +112,8 @@ namespace MultiDownloader
             run_flag = false;
             if(DownLoaderThread != null)
             {
-                logger.Info("Close DownLoader");
                 DownLoaderThread.Join();
+                logger.Info("Close DownLoader");
             }
             else
             {
@@ -110,52 +126,6 @@ namespace MultiDownloader
             {
                 task.Join();
             });
-        }
-    }
-
-    internal class FileDownloader
-    {
-        private readonly Logger logger;
-        private string url;
-        private string file_name;
-        private FileStream filestream;
-        private StreamWriter filewriter;
-        public FileDownloader(Logger logger, string url, string file_name)
-        {
-            this.logger = logger;
-            this.url = url;
-            this.file_name = file_name;
-            filestream = File.Open(file_name, FileMode.OpenOrCreate);
-            filewriter = new StreamWriter(filestream);
-
-            logger.Info("Download " + url + " to file <" + file_name + ">");
-        }
-
-        public void Download()
-        {
-            logger.Info("Start Download " + url);
-        }
-    }
-
-    internal class DownloadUnit
-    {
-
-        private Logger logger;
-        private string url;
-        private StreamWriter writer;
-        private int l;
-        private int r;
-        public DownloadUnit(Logger logger, string url, StreamWriter writer, int l, int r)
-        {
-            this.l = l;
-            this.writer = writer;  
-            this.url = url;
-            this.r = r;
-            this.logger = logger;
-        }
-        public void start()
-        {
-
         }
     }
 }

@@ -12,7 +12,8 @@ namespace Test
 
             new Downloader(logger).Delete();
 
-            downloader.Download("lll", "sss.ccc");
+            downloader.Download("https://github.com/CloudDreamLake/CDLBaseLib/releases/download/Rel/CDLLogger.dll", "CDLLogger.dll.down");
+            //downloader.Download("https://github.com/CloudDreamLake/CDLBaseLib/releases/download/Rel/CDLLogger.dll", ".");
 
             downloader.Delete();
 

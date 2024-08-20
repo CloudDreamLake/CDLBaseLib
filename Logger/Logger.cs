@@ -21,9 +21,10 @@ namespace CDLLogger
             public string? TName = TName;
             public string TId = TId;
         }
-        private List<LogInfo> logInfos = [];
+        private static Logger? Instance;
+        private static Object locker = new Object();
+        private readonly List<LogInfo> logInfos = [];
         private LoggerLevel print_level;
-        private object locker = new object();
         private bool run_flag = true;
         private Thread? LogThread = null; 
         public static Dictionary<LoggerLevel, string> LogLevel2String = new Dictionary<LoggerLevel, string>()
@@ -34,13 +35,12 @@ namespace CDLLogger
             { LoggerLevel.error, "Error" },
             { LoggerLevel.fatal, "Fatal" },
         };
-        public List<LoggerPrintHandle.LoggerPrintHandle> outputs = new List<LoggerPrintHandle.LoggerPrintHandle>()
-        {
+        public List<LoggerPrintHandle.LoggerPrintHandle> outputs = [
             new ConsoleOutput(),
             new FileOutput(),
             new FileOutput("log.log")
-        };
-        public Logger()
+        ];
+        private Logger()
         {
             print_level = LoggerLevel.info;
             Console.WriteLine("[CDL LOGGER] R1.0 for Windows.");
@@ -48,10 +48,6 @@ namespace CDLLogger
             Console.WriteLine("Handle List:");
             foreach(var output in outputs) Console.WriteLine("\t" + output.getName());
             Console.WriteLine("");
-        }
-        public Logger(LoggerLevel print_level)
-        {
-            this.print_level = print_level;
         }
         public void Main()
         {
@@ -75,15 +71,26 @@ namespace CDLLogger
         }
         public static Logger Create()
         {
-            Logger logger = new Logger();
+            if (Instance == null)
+            {
+                lock (locker)
+                {
+                    if (Instance == null)
+                    {
+                        Logger logger = new();
 
-            logger.LogThread = new Thread(logger.Main);
+                        logger.LogThread = new(logger.Main)
+                        {
+                            Name = "Log Thread"
+                        };
 
-            logger.LogThread.Name = "Log Thread";
+                        logger.LogThread.Start();
 
-            logger.LogThread.Start();
-
-            return logger;
+                        return Instance = logger;
+                    }
+                }
+            }
+            return Instance;
         }
         public void SetPrintLevel(LoggerLevel print_level)
         {

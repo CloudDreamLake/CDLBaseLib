@@ -18,14 +18,12 @@ namespace CDLLogger.LoggerPrintHandle
             this.FileName = FileName;
             fileStream = new FileStream(FileName, FileMode.OpenOrCreate);
             writer = new StreamWriter(fileStream);
-            fileStream.SetLength(0);
+            fileStream.Position = fileStream.Length;
+            writer.WriteLine("---------------------------------------------------");
         }
-        public FileOutput()
+        public FileOutput() : this(DateTime.Now.ToString("yy-MM-dd") + ".log")
         {
-            FileName = DateTime.Now.ToString("yy-MM-dd") + ".log";
-            fileStream = new FileStream(FileName, FileMode.OpenOrCreate);
-            writer = new StreamWriter(fileStream);
-            fileStream.SetLength(0);
+
         }
         public FileOutput(FileStream fileStream)
         {
